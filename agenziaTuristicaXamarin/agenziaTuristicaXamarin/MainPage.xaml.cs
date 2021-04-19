@@ -18,44 +18,15 @@ namespace agenziaTuristicaXamarin
         public MainPage()
         {
             InitializeComponent();
-            azioniPicker = new List<string>{ "Aggiungi escursione", "Modifica escursione", "Aggiungi partecipante", "Elimina partecipante" };
+            azioniPicker = new List<string>{ "Seleziona azione", "Aggiungi escursione", "Modifica escursione", "Aggiungi partecipante", "Elimina partecipante" };
             entryInPage = new List<(PersonalEntry, Entry)>();
+            pckAzioni.ItemsSource = azioniPicker;
+            pckAzioni.SelectedIndex = 0;
         }
 
         private void Picker_Focused(object sender, FocusEventArgs e)
         {
-            // Aggiungiamo le azioni
-            if (!pckAzioni.Items.Contains("Modifica escursione"))
-            {
-                pckAzioni.Items.Add("Modifica escursione");
-                pckAzioni.Items.Add("Elimina escursione");
-                pckAzioni.Items.Add("Aggiungi partecipante");
-                pckAzioni.Items.Add("Elimina partecipante");
-            }
-
-            // Cerchiamo l'azione selezionata
-            switch (pckAzioni.SelectedIndex)
-            {
-                case 0:
-                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
-                    Content = CreaContentPageNuovaEscursione();
-                    //Agenzia.NuovaEscursione();
-                    break;
-                case 1:
-                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
-                    break;
-                case 2:
-                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
-                    break;
-                case 3:
-                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
-                    break;
-                case 4:
-                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
-                    break;
-                default:
-                    break;
-            }
+            ControlloIndice(this, EventArgs.Empty);
         }
 
         private void RipristinaHome() 
@@ -66,7 +37,7 @@ namespace agenziaTuristicaXamarin
                 Text = "Agenzia Turistica",
                 VerticalTextAlignment = TextAlignment.Center,
                 HorizontalTextAlignment = TextAlignment.Center,
-                FontSize = 15,
+                FontSize = 25,
                 FontAttributes = FontAttributes.Bold
             };
 
@@ -76,8 +47,9 @@ namespace agenziaTuristicaXamarin
                 VerticalOptions = LayoutOptions.CenterAndExpand,
                 HorizontalOptions = LayoutOptions.CenterAndExpand,
                 ItemsSource = azioniPicker,
-                SelectedIndex = 0
             };
+            picker.Focused += Picker_Focused;
+            picker.SelectedIndexChanged += myPickerSelectedIndexChanged;
 
             Label footer = new Label
             {
@@ -94,10 +66,44 @@ namespace agenziaTuristicaXamarin
             Content = page;
         }
 
+        private void myPickerSelectedIndexChanged(object sender, EventArgs e)
+        {
+            var selectedValue = pckAzioni.Items[pckAzioni.SelectedIndex];
+            Debug.WriteLine($"VALORE SELEZIONATO: {selectedValue}");
+        }
+
+        private void ControlloIndice(object sender, EventArgs e)
+        {
+            // Cerco l'azione selezionata
+            switch (pckAzioni.SelectedIndex)
+            {
+                case 0:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex} - {pckAzioni.SelectedItem}");
+                    break;
+                case 1:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex} - {pckAzioni.SelectedItem}");
+                    Content = CreaContentPageNuovaEscursione();
+                    pckAzioni.SelectedIndex = 0;
+                    break;
+                case 2:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex} - {pckAzioni.SelectedItem}");
+                    pckAzioni.SelectedIndex = 0;
+                    break;
+                case 3:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex} - {pckAzioni.SelectedItem}");
+                    pckAzioni.SelectedIndex = 0;
+                    break;
+                case 4:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex} - {pckAzioni.SelectedItem}");
+                    pckAzioni.SelectedIndex = 0;
+                    break;
+            }
+        }
+
         private StackLayout CreaContentPageNuovaEscursione()
         {
             StackLayout stack = new StackLayout();
-            // data, tipo, descrizione, optianl
+            
             Entry numeroEscursione = new Entry { Placeholder = "Inserisci il numero dell'escursione..." };
             PersonalEntry numEsc = new PersonalEntry { Name = "txtNumeroEscursione" };
             entryInPage.Add((numEsc, numeroEscursione));
@@ -108,7 +114,7 @@ namespace agenziaTuristicaXamarin
             entryInPage.Add((prezzo, prezzoBase));
             stack.Children.Add(prezzoBase);
 
-            Entry dataEscursione = new Entry { Placeholder = "Inserisci la data dell'escursione..." };
+            Entry dataEscursione = new Entry { Placeholder = "Inserisci la data (mese/giorno/anno) dell'escursione..." };
             PersonalEntry data = new PersonalEntry { Name = "txtDataEscursione" };
             entryInPage.Add((data, dataEscursione));
             stack.Children.Add(dataEscursione);
@@ -128,31 +134,56 @@ namespace agenziaTuristicaXamarin
             entryInPage.Add((optional, optionalEscursione)); stack.Children.Add(optionalEscursione);
             stack.Children.Add(optionalEscursione);
 
-            Button btn = new Button { Text = "Invia dati!" };
+            // Creo uno stack layout orizzontale per metterci i due bottoni in fila
+            StackLayout stack1 = new StackLayout();
+            stack1.Orientation = StackOrientation.Horizontal;
+            Button btn = new Button { Text = "Invia dati", HorizontalOptions = LayoutOptions.CenterAndExpand};
             btn.Clicked += Btn_Clicked;
-            stack.Children.Add(btn);
+            stack1.Children.Add(btn);
 
+            Button btnRet = new Button { Text = "Torna alla pagina iniziale", HorizontalOptions = LayoutOptions.CenterAndExpand };
+            btnRet.Clicked += Btn_Clicked;
+            stack1.Children.Add(btnRet);
+
+            stack.Children.Add(stack1);
             return stack;
         }
 
         private void Btn_Clicked(object sender, EventArgs e)
         {
-            bool flag = true;
-            foreach (var ntr in entryInPage)
+            if ((sender as Button).Text != "Torna alla pagina iniziale")
             {
-                if (string.IsNullOrEmpty(ntr.Item2.Text))
+                bool flag = true;
+                foreach (var ntr in entryInPage)
                 {
-                    flag = false;
-                    DisplayAlert("Errore Input", "Compilare tutti i campi!", "Ho capito");
-                    resetPage();
-                    break;
+                    if (string.IsNullOrEmpty(ntr.Item2.Text))
+                    {
+                        flag = false;
+                        DisplayAlert("Errore Input", "Compilare tutti i campi!", "Chiudi");
+                        ResetPage();
+                        break;
+                    }
+                }
+
+                if (flag)
+                {
+                    Agenzia.NuovaEscursione(
+                        Convert.ToInt32(entryInPage[0].Item2.Text),
+                        Convert.ToDouble(entryInPage[1].Item2.Text),
+                        Convert.ToDateTime(entryInPage[2].Item2.Text),
+                        entryInPage[3].Item2.Text,
+                        entryInPage[4].Item2.Text,
+                        entryInPage[5].Item2.Text );
+
+                    Debug.WriteLine(Agenzia.VisualizzaEscursioni());
+                    RipristinaHome();
                 }
             }
-
-            if (flag) RipristinaHome();
+            else
+                RipristinaHome();
         }
 
-        private void resetPage()
+        private void ResetPage()
         {
             foreach (var pe in entryInPage)
                 pe.Item2.Text = string.Empty;
