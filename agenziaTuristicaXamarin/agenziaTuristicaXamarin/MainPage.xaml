@@ -17,8 +17,13 @@
             Title="Azioni"
             VerticalOptions="CenterAndExpand"
             HorizontalOptions="CenterAndExpand" 
-            Focused="Picker_Focused" />
-
+            Focused="Picker_Focused" >
+            <Picker.Items>
+                <x:String>Aggiungi escursione</x:String>
+            </Picker.Items>
+            <Picker.SelectedIndex>0</Picker.SelectedIndex>
+        </Picker>
+        
         <Label 
             x:Name="footer" 
             Text="Liam Bartolini, Lorenzo Curzi"

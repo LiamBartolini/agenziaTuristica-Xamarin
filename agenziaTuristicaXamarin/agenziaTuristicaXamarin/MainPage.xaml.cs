@@ -12,25 +12,155 @@ namespace agenziaTuristicaXamarin
 {
     public partial class MainPage : ContentPage
     {
+        List<string> azioniPicker = null;
+        protected List<(PersonalEntry, Entry)> entryInPage = null;
+
         public MainPage()
         {
-            InitializeComponent();   
+            InitializeComponent();
+            azioniPicker = new List<string>{ "Aggiungi escursione", "Modifica escursione", "Aggiungi partecipante", "Elimina partecipante" };
+            entryInPage = new List<(PersonalEntry, Entry)>();
         }
 
         private void Picker_Focused(object sender, FocusEventArgs e)
         {
-            if (!pckAzioni.Items.Contains("Aggiungi escursione"))
+            // Aggiungiamo le azioni
+            if (!pckAzioni.Items.Contains("Modifica escursione"))
             {
-                pckAzioni.Items.Add("Aggiungi escursione");
                 pckAzioni.Items.Add("Modifica escursione");
                 pckAzioni.Items.Add("Elimina escursione");
                 pckAzioni.Items.Add("Aggiungi partecipante");
                 pckAzioni.Items.Add("Elimina partecipante");
-                pckAzioni.SelectedIndex = 0;
             }
 
-            if (pckAzioni.SelectedIndex != -1)
-                Debug.WriteLine($"Scelta {pckAzioni.Items[pckAzioni.SelectedIndex]}");
+            // Cerchiamo l'azione selezionata
+            switch (pckAzioni.SelectedIndex)
+            {
+                case 0:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
+                    Content = CreaContentPageNuovaEscursione();
+                    //Agenzia.NuovaEscursione();
+                    break;
+                case 1:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
+                    break;
+                case 2:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
+                    break;
+                case 3:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
+                    break;
+                case 4:
+                    Debug.WriteLine($"INDICE {pckAzioni.SelectedIndex}");
+                    break;
+                default:
+                    break;
+            }
         }
+
+        private void RipristinaHome() 
+        {
+            StackLayout page = new StackLayout();
+            Label titolo = new Label
+            {
+                Text = "Agenzia Turistica",
+                VerticalTextAlignment = TextAlignment.Center,
+                HorizontalTextAlignment = TextAlignment.Center,
+                FontSize = 15,
+                FontAttributes = FontAttributes.Bold
+            };
+
+            Picker picker = new Picker
+            {
+                Title = "Azioni disponibili",
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+                ItemsSource = azioniPicker,
+                SelectedIndex = 0
+            };
+
+            Label footer = new Label
+            {
+                Text = "Liam Bartolini, Lorenzo Curzi",
+                FontSize = 10,
+                VerticalOptions = LayoutOptions.EndAndExpand,
+                HorizontalOptions = LayoutOptions.End,
+                FontAttributes = FontAttributes.Italic
+            };
+
+            page.Children.Add(titolo);
+            page.Children.Add(picker);
+            page.Children.Add(footer);
+            Content = page;
+        }
+
+        private StackLayout CreaContentPageNuovaEscursione()
+        {
+            StackLayout stack = new StackLayout();
+            // data, tipo, descrizione, optianl
+            Entry numeroEscursione = new Entry { Placeholder = "Inserisci il numero dell'escursione..." };
+            PersonalEntry numEsc = new PersonalEntry { Name = "txtNumeroEscursione" };
+            entryInPage.Add((numEsc, numeroEscursione));
+            stack.Children.Add(numeroEscursione);
+
+            Entry prezzoBase = new Entry { Placeholder = "Inserisci il prezzoBase dell'escursione..." };
+            PersonalEntry prezzo = new PersonalEntry { Name = "txtPrezzo" };
+            entryInPage.Add((prezzo, prezzoBase));
+            stack.Children.Add(prezzoBase);
+
+            Entry dataEscursione = new Entry { Placeholder = "Inserisci la data dell'escursione..." };
+            PersonalEntry data = new PersonalEntry { Name = "txtDataEscursione" };
+            entryInPage.Add((data, dataEscursione));
+            stack.Children.Add(dataEscursione);
+
+            Entry tipoEscursione = new Entry { Placeholder = "Inserisci il tipo di escursione..." };
+            PersonalEntry tipo = new PersonalEntry { Name = "txtTipo" };
+            entryInPage.Add((tipo, tipoEscursione));
+            stack.Children.Add(tipoEscursione);
+
+            Entry descrizioneEscursione = new Entry { Placeholder = "Inserisci la descrizione dell'escursione..." };
+            PersonalEntry descrizione = new PersonalEntry { Name = "txtDescrizione" };
+            entryInPage.Add((descrizione, descrizioneEscursione));
+            stack.Children.Add(descrizioneEscursione);
+
+            Entry optionalEscursione = new Entry { Placeholder = "Inserisci gli optional dell'escursione..." };
+            PersonalEntry optional = new PersonalEntry { Name = "txtOptional" };
+            entryInPage.Add((optional, optionalEscursione)); stack.Children.Add(optionalEscursione);
+            stack.Children.Add(optionalEscursione);
+
+            Button btn = new Button { Text = "Invia dati!" };
+            btn.Clicked += Btn_Clicked;
+            stack.Children.Add(btn);
+
+            return stack;
+        }
+
+        private void Btn_Clicked(object sender, EventArgs e)
+        {
+            bool flag = true;
+            foreach (var ntr in entryInPage)
+            {
+                if (string.IsNullOrEmpty(ntr.Item2.Text))
+                {
+                    flag = false;
+                    DisplayAlert("Errore Input", "Compilare tutti i campi!", "Ho capito");
+                    resetPage();
+                    break;
+                }
+            }
+
+            if (flag) RipristinaHome();
+        }
+
+        private void resetPage()
+        {
+            foreach (var pe in entryInPage)
+                pe.Item2.Text = string.Empty;
+        }
+    }
+
+    public class PersonalEntry : MainPage
+    {
+        public string Name { get; set; }
     }
 }
