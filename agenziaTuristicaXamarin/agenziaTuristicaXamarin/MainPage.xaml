@@ -1,10 +1,31 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="agenziaTuristicaXamarin.MainPage">
+             x:Class="agenziaTuristicaXamarin.MainPage" >
 
     <StackLayout>
-        <Label Text="Funziono" VerticalTextAlignment="Center" HorizontalTextAlignment="Center"> </Label>
-    </StackLayout>
+        <Label 
+            x:Name="Title"
+            Text="Agenzia Turistica" 
+            VerticalTextAlignment="Center" 
+            HorizontalTextAlignment="Center"
+            FontSize="Header"
+            FontAttributes="Bold" />
 
+        <Picker 
+            x:Name="pckAzioni"
+            Title="Azioni"
+            VerticalOptions="CenterAndExpand"
+            HorizontalOptions="CenterAndExpand" 
+            Focused="Picker_Focused" />
+
+        <Label 
+            x:Name="footer" 
+            Text="Liam Bartolini, Lorenzo Curzi"
+            FontSize="Micro"
+            VerticalOptions="EndAndExpand"
+            HorizontalOptions="End"
+            FontAttributes="Italic" />
+    </StackLayout>
+    
 </ContentPage>
